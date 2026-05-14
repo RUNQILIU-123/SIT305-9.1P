@@ -85,8 +85,22 @@
             android:id="@+id/etLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Location"
+            android:hint="Location (type manually or choose below)"
             android:inputType="text"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:id="@+id/btnChooseLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CHOOSE LOCATION (AUTOCOMPLETE)"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:id="@+id/btnGetCurrentLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GET CURRENT LOCATION"
             android:layout_marginBottom="12dp" />
 
         <Button

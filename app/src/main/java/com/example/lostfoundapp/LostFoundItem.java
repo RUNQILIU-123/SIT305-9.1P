@@ -17,6 +17,8 @@ public class LostFoundItem implements Serializable {
     private String location;
     private String imageUri;
     private String timestamp;
+    private double latitude;
+    private double longitude;
 
     public LostFoundItem() {}
 
@@ -32,6 +34,14 @@ public class LostFoundItem implements Serializable {
         this.location = location;
         this.imageUri = imageUri;
         this.timestamp = timestamp;
+    }
+
+    public LostFoundItem(int id, String type, String name, String contactName, String phoneNumber, 
+                        String description, String category, String location, String imageUri, String timestamp,
+                        double latitude, double longitude) {
+        this(id, type, name, contactName, phoneNumber, description, category, location, imageUri, timestamp);
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     // Getters and Setters
@@ -64,4 +74,10 @@ public class LostFoundItem implements Serializable {
 
     public String getTimestamp() { return timestamp; }
     public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 }

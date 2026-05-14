@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Main entry point of the app.
- * Provides navigation to Create Advert and Show All Items screens.
+ * Provides navigation to Create Advert, Show All Items, and Show On Map screens.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnCreateAdvert = findViewById(R.id.btnCreateAdvert);
         Button btnShowItems = findViewById(R.id.btnShowItems);
+        Button btnShowOnMap = findViewById(R.id.btnShowOnMap);
 
         // Navigate to CreateAdvertActivity
         btnCreateAdvert.setOnClickListener(new View.OnClickListener() {
@@ -35,6 +36,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ItemListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Navigate to MapActivity
+        btnShowOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
             }
         });

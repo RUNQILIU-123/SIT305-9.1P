@@ -11,11 +11,12 @@ import java.util.List;
 
 /**
  * SQLite Database Helper for storing Lost and Found items.
+ * Extended for Task 9.1P to include latitude and longitude.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "LostFoundDB";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2; // Incremented version for Task 9.1P
 
     // Table and Columns
     private static final String TABLE_ITEMS = "items";
@@ -29,6 +30,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_LOCATION = "location";
     private static final String COLUMN_IMAGE_URI = "image_uri";
     private static final String COLUMN_TIMESTAMP = "timestamp";
+    private static final String COLUMN_LATITUDE = "latitude";
+    private static final String COLUMN_LONGITUDE = "longitude";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,14 +49,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_CATEGORY + " TEXT,"
                 + COLUMN_LOCATION + " TEXT,"
                 + COLUMN_IMAGE_URI + " TEXT,"
-                + COLUMN_TIMESTAMP + " TEXT" + ")";
+                + COLUMN_TIMESTAMP + " TEXT,"
+                + COLUMN_LATITUDE + " REAL DEFAULT 0,"
+                + COLUMN_LONGITUDE + " REAL DEFAULT 0" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            // Safe upgrade: add latitude and longitude columns without deleting existing data
+            db.execSQL("ALTER TABLE " + TABLE_ITEMS + " ADD COLUMN " + COLUMN_LATITUDE + " REAL DEFAULT 0");
+            db.execSQL("ALTER TABLE " + TABLE_ITEMS + " ADD COLUMN " + COLUMN_LONGITUDE + " REAL DEFAULT 0");
+        }
     }
 
     /**
@@ -71,10 +79,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LOCATION, item.getLocation());
         values.put(COLUMN_IMAGE_URI, item.getImageUri());
         values.put(COLUMN_TIMESTAMP, item.getTimestamp());
+        values.put(COLUMN_LATITUDE, item.getLatitude());
+        values.put(COLUMN_LONGITUDE, item.getLongitude());
 
         long id = db.insert(TABLE_ITEMS, null, values);
         db.close();
         return id;
+    }
+
+    /**
+     * Updates an existing item (e.g., after geocoding old records).
+     */
+    public int updateItem(LostFoundItem item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_LATITUDE, item.getLatitude());
+        values.put(COLUMN_LONGITUDE, item.getLongitude());
+
+        int result = db.update(TABLE_ITEMS, values, COLUMN_ID + " = ?", new String[]{String.valueOf(item.getId())});
+        db.close();
+        return result;
     }
 
     /**
@@ -109,6 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 item.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
                 item.setImageUri(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_URI)));
                 item.setTimestamp(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP)));
+                item.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
+                item.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
                 itemList.add(item);
             } while (cursor.moveToNext());
         }
